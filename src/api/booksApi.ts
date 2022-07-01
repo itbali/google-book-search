@@ -3,10 +3,11 @@ import {instance} from "./instance";
 export type SubjectTypes = "all"|"biography"|"computers"| "history"| "medical"| "poetry"
 export type OrderByTypes = "relevance"|"newest"
 export type GetBooksQueryParams = {
-  title: string
-  maxResults: number
-  subject: SubjectTypes
-  orderBy: OrderByTypes
+  q?: string
+  maxResults?: number
+  subject?: SubjectTypes
+  orderBy?: OrderByTypes
+  startIndex?: number
 };
 export type BookType =  {
     "kind": string,
@@ -96,12 +97,12 @@ export type BookType =  {
 export type GetBooksResponseDataType = {
   "kind": string,
   "totalItems": number,
-  "books": Array<BookType>
+  "items": Array<BookType>
 };
 
-export const cardsAPI = {
-  getCards(params: GetBooksQueryParams) {
-    return instance.get<GetBooksResponseDataType>("", {params})
+export const booksAPI = {
+  getBooks(params: GetBooksQueryParams) {
+    return instance.get<GetBooksResponseDataType>("", {params: {...params, key:"AIzaSyB1G9yn8AfZrs6_yQ-Xdng4d007jB2rfMM"}})
       .then(response => response.data);
   }
 }

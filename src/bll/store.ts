@@ -9,7 +9,7 @@ export type AppThunkType<ReturnType = void> = ThunkAction<ReturnType, AppStateTy
 export type AppDispatchType = ThunkDispatch<AppStateType, unknown, RootActionsType>;
 
 const rootReducer = combineReducers({books: booksReducer})
-const store = createStore(rootReducer, applyMiddleware(thunk))
+export const store = createStore(rootReducer, applyMiddleware(thunk))
 
 export const useAppDispatch = () => useDispatch<AppDispatchType>();
 export const useAppSelector: TypedUseSelectorHook<AppStateType> = useSelector;
