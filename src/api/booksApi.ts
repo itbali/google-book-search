@@ -1,6 +1,6 @@
 import {instance} from "./instance";
 
-export type SubjectTypes = "all"|"biography"|"computers"| "history"| "medical"| "poetry"
+export type SubjectTypes = "all"|"art"|"biography"|"computers"| "history"| "medical"| "poetry"
 export type OrderByTypes = "relevance"|"newest"
 export type GetBooksQueryParams = {
   q?: string
@@ -15,8 +15,9 @@ export type BookType =  {
     "etag": string,
     "selfLink": string,
     "volumeInfo": {
+      subtitle?: string;
       "title": string,
-      "authors": string[],
+      "authors"?: string[],
       "publisher": string,
       "publishedDate": string,
       "description": string,

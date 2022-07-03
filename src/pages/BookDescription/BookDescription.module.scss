@@ -1,0 +1,33 @@
+.container {
+  background-color: #506773;
+  min-height: 100vh;
+  padding: 30px;
+}
+
+.wrapper {
+  background-color: wheat;
+  border: 3px solid #28373f;
+  border-radius: 10px;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.55);
+  padding: 10px;
+
+  img {
+	border: 1px solid #506773;
+	border-radius: 5px;
+	box-shadow: 3px 3px 7px #28373f;
+  }
+}
+.countable{
+  &:not(:first-child):not(:last-child)::after{
+    content: ',';
+  }
+}
+.goBack {
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  padding: 10px;
+  width: fit-content;
+}

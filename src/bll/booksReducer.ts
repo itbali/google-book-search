@@ -1,7 +1,9 @@
 import {booksAPI, BookType, GetBooksQueryParams, OrderByTypes, SubjectTypes} from "../api/booksApi";
 import {AppStateType, AppThunkType} from "./store";
 
+//consts
 const SET_BOOKS = "SET_BOOKS"
+const SET_FIRST_SEARCH = "SET_FIRST_SEARCH"
 const SET_TITLE = "SET_TITLE"
 const SET_ERROR = "SET_ERROR"
 const SET_TOTAL_ITEMS = "SET_TOTAL_ITEMS"
@@ -9,27 +11,34 @@ const SET_SUBJECT = "SET_SUBJECT"
 const SET_ORDER_BY = "SET_ORDER_BY"
 const SET_LOADING = "SET_LOADING"
 const SET_LOAD_MORE = "SET_LOAD_MORE"
+const SET_START_INDEX_ZERO = "SET_START_INDEX_ZERO"
 
+//types
 type InitStateType = {
   isLoading: boolean,
-  "kind": string,
-  "totalItems": number,
+  isFirstSearch: boolean,
+  kind: string,
+  totalItems: number,
   error: string,
   searchParams: GetBooksQueryParams
-  "books": Array<BookType>
+  books: Array<BookType>
 }
 export type BooksActionsType =
   ReturnType<typeof setBooks> |
   ReturnType<typeof setQueryTitle> |
   ReturnType<typeof setError> |
   ReturnType<typeof setQuerySubject> |
-  ReturnType<typeof setOrderBy> |
+  ReturnType<typeof setQueryOrderBy> |
   ReturnType<typeof setTotalItems> |
   ReturnType<typeof setLoadMore> |
+  ReturnType<typeof setStartIndexToZero> |
+  ReturnType<typeof setIsFirstSearch> |
   ReturnType<typeof setIsLoading>
 
+//initState
 const initialState: InitStateType = {
   isLoading: false,
+  isFirstSearch:true,
   kind: '',
   error: '',
   totalItems: 0,
@@ -43,6 +52,7 @@ const initialState: InitStateType = {
   books: []
 }
 
+//reducer
 export const booksReducer = (state: InitStateType = initialState, action: BooksActionsType) => {
   switch (action.type) {
     case "SET_BOOKS":
@@ -59,6 +69,10 @@ export const booksReducer = (state: InitStateType = initialState, action: BooksA
       return {...state, searchParams: {...state.searchParams, orderBy: action.orderBy}}
     case "SET_LOADING":
       return {...state, isLoading: action.isLoading}
+    case "SET_FIRST_SEARCH":
+      return {...state, isFirstSearch: action.isFirstSearch}
+    case "SET_START_INDEX_ZERO":
+      return {...state, searchParams:{...state.searchParams, startIndex:0}}
     case "SET_LOAD_MORE":
       return {
         ...state,
@@ -72,6 +86,7 @@ export const booksReducer = (state: InitStateType = initialState, action: BooksA
   }
 }
 
+//actions
 export const setBooks = (books: Array<BookType>) => {
   return {type: SET_BOOKS, books} as const
 }
@@ -81,11 +96,14 @@ export const setQueryTitle = (title: string) => {
 export const setQuerySubject = (subject: SubjectTypes) => {
   return {type: SET_SUBJECT, subject} as const
 }
-export const setOrderBy = (orderBy: OrderByTypes) => {
+export const setQueryOrderBy = (orderBy: OrderByTypes) => {
   return {type: SET_ORDER_BY, orderBy} as const
 }
 export const setIsLoading = (isLoading: boolean) => {
   return {type: SET_LOADING, isLoading} as const
+}
+export const setIsFirstSearch = (isFirstSearch: boolean) => {
+  return {type: SET_FIRST_SEARCH, isFirstSearch} as const
 }
 export const setTotalItems = (totalItems: number) => {
   return {type: SET_TOTAL_ITEMS, totalItems} as const
@@ -96,16 +114,22 @@ export const setError = (error: string) => {
 export const setLoadMore = () => {
   return {type: SET_LOAD_MORE,} as const
 }
+export const setStartIndexToZero = () => {
+  return {type: SET_START_INDEX_ZERO,} as const
+}
 
+//thunks
 export const getBooks = (): AppThunkType => (dispatch, getState: () => AppStateType) => {
-  const {q, orderBy, maxResults, subject} = getState().books.searchParams
+  dispatch(setStartIndexToZero())
+  setError('')
+  setBooks([])
+  const {q, orderBy, maxResults, subject,startIndex} = getState().books.searchParams
   const queryParams: GetBooksQueryParams = {
     q: subject === "all" ? q : `${q}+subject:${subject}`,
     orderBy,
     maxResults,
-    startIndex: 0
+    startIndex
   }
-  console.log(queryParams)
   dispatch(setIsLoading(true));
   booksAPI.getBooks(queryParams)
     .then(data => {
@@ -114,10 +138,12 @@ export const getBooks = (): AppThunkType => (dispatch, getState: () => AppStateT
       dispatch(setTotalItems(data.totalItems));
     })
     .catch(err => {
-      dispatch(setError(err.message ? err.message : err.response.data.error.message));
+      dispatch(setError(err.message ? "Some error has acquired" : err.response.data.error.message));
+      setTimeout(()=>setError(''),10000)
     })
     .finally(() => {
       dispatch(setIsLoading(false));
+      dispatch(setIsFirstSearch(false));
     });
 }
 
@@ -125,20 +151,23 @@ export const loadMore = (): AppThunkType => (dispatch, getState: () => AppStateT
   dispatch(setLoadMore())
   const {q, orderBy, maxResults, subject, startIndex} = getState().books.searchParams
   const currentBooks = getState().books.books
+  const totalItems = getState().books.totalItems
   const queryParams: GetBooksQueryParams = {
     q: subject === "all" ? q : `${q}+subject:${subject}`,
     orderBy,
-    maxResults,
+    maxResults:(totalItems-maxResults!)>=30?30:(totalItems-maxResults!),
     startIndex,
   }
-  console.log(queryParams)
   dispatch(setIsLoading(true));
   booksAPI.getBooks(queryParams)
     .then(data => {
+      console.log(currentBooks)
+      console.log(data.items)
       dispatch(setBooks([...currentBooks, ...data.items]));
     })
     .catch(err => {
-      dispatch(setError(err.message ? err.message : err.response.data.error.message));
+      dispatch(setError(err.message ? "Some error has acquired" : err.response.data.error.message));
+      setTimeout(()=>setError(''),10000)
     })
     .finally(() => {
       dispatch(setIsLoading(false));

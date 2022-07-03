@@ -1,13 +1,17 @@
 import React from 'react';
 import './App.css';
-import {BooksPage} from "./components/BooksPage";
-import {Provider} from "react-redux";
-import {store} from "./bll/store";
+import {BooksPage} from "./pages/BooksPage/BooksPage";
+import {Route, Routes} from "react-router-dom";
+import {BookDescription} from "./pages/BookDescription/BookDescription";
 
 function App() {
   return (
     <div className="App">
-      <BooksPage/>
+      <Routes>
+        <Route path={"/"} element={<BooksPage/>}/>
+        <Route path={"/:id"} element={<BookDescription/>}/>
+      </Routes>
+
     </div>
   );
 }
