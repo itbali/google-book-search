@@ -15,17 +15,18 @@
   justify-content: space-around;
 }
 .loadMore{
+  align-items: center;
   display: flex;
   justify-content: center;
-  align-items: center;
   padding: 30px 0;
   button{
     background-color: white;
     border: 1px solid #28373f;
+    border-radius: 10px;
     color: #28373f;
+    cursor: pointer;
     font-size: 18px;
     font-weight: 600;
     padding: 15px 30px;
-    border-radius: 10px;
   }
 }

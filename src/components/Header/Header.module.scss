@@ -1,15 +1,15 @@
 
 .header {
+  backdrop-filter: blur(10px);
   background-color: #23435dd6;
   color: white;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
   padding: 40px 10px 10px;
-  backdrop-filter: blur(10px);
   position: fixed;
-  z-index: 99;
   width: 100%;
+  z-index: 99;
 }
 
 .container {
@@ -20,12 +20,12 @@
 
 .subHeader {
   align-self: flex-start;
+  color: #ffffff80;
   font-size: 18px;
   font-weight: 600;
   left: 10px;
   position: absolute;
   top: 10px;
-  color: #ffffff80;
 }
 
 .search {
@@ -43,6 +43,7 @@
   button {
 	background: none;
 	border: 0;
+	cursor: pointer;
 	height: 100%;
 	position: absolute;
 	right: 0;
@@ -52,41 +53,45 @@
 
 
 .categories {
-  margin-top: 35px;
   align-items: center;
   display: flex;
   gap: 10px;
   justify-content: flex-start;
+  margin-top: 35px;
   width: 100%;
 }
-.error{
-  position: absolute;
-  margin-top: -10px;
-  font-size: 17px;
-  color: red;
-  font-weight: bold;
+
+.error {
   animation: errorDisappear 10s;
+  color: red;
+  font-size: 17px;
+  font-weight: bold;
+  margin-top: -10px;
+  position: absolute;
 }
+
 .totalFound {
   margin-left: 30px;
 }
 
 @media (max-width: 550px) {
-  .search{
+  .search {
 	margin: 14px 0;
-	input{
+
+	input {
 	  padding: 7px;
 	}
   }
 }
+
 @keyframes errorDisappear {
-  0%{
+  0% {
 	opacity: 1;
   }
-  90%{
+  90% {
 	opacity: 0.75;
   }
-  100%{
+  100% {
 	opacity: 0;
   }
 }

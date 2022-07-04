@@ -32,7 +32,7 @@ export const Books = () => {
         {
           (totalItems !== 0)
             ?
-            <>
+            <div>
               <div className={s.books}>
                 {books.map(el => {
                   return (
@@ -49,7 +49,7 @@ export const Books = () => {
                   Load more
                 </button>
               </div>
-            </>
+            </div>
             :
             (<div>No books found</div>)
         }

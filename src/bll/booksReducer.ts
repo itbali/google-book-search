@@ -38,7 +38,7 @@ export type BooksActionsType =
 //initState
 const initialState: InitStateType = {
   isLoading: false,
-  isFirstSearch:true,
+  isFirstSearch: true,
   kind: '',
   error: '',
   totalItems: 0,
@@ -72,7 +72,7 @@ export const booksReducer = (state: InitStateType = initialState, action: BooksA
     case "SET_FIRST_SEARCH":
       return {...state, isFirstSearch: action.isFirstSearch}
     case "SET_START_INDEX_ZERO":
-      return {...state, searchParams:{...state.searchParams, startIndex:0}}
+      return {...state, searchParams: {...state.searchParams, startIndex: 0}}
     case "SET_LOAD_MORE":
       return {
         ...state,
@@ -118,12 +118,13 @@ export const setStartIndexToZero = () => {
   return {type: SET_START_INDEX_ZERO,} as const
 }
 
+
 //thunks
 export const getBooks = (): AppThunkType => (dispatch, getState: () => AppStateType) => {
   dispatch(setStartIndexToZero())
   setError('')
-  setBooks([])
-  const {q, orderBy, maxResults, subject,startIndex} = getState().books.searchParams
+  // setBooks([])
+  const {q, orderBy, maxResults, subject, startIndex} = getState().books.searchParams
   const queryParams: GetBooksQueryParams = {
     q: subject === "all" ? q : `${q}+subject:${subject}`,
     orderBy,
@@ -133,13 +134,12 @@ export const getBooks = (): AppThunkType => (dispatch, getState: () => AppStateT
   dispatch(setIsLoading(true));
   booksAPI.getBooks(queryParams)
     .then(data => {
-      console.log(data)
       dispatch(setBooks(data.items));
       dispatch(setTotalItems(data.totalItems));
     })
     .catch(err => {
       dispatch(setError(err.message ? "Some error has acquired" : err.response.data.error.message));
-      setTimeout(()=>setError(''),10000)
+      setTimeout(() => setError(''), 10000)
     })
     .finally(() => {
       dispatch(setIsLoading(false));
@@ -155,19 +155,17 @@ export const loadMore = (): AppThunkType => (dispatch, getState: () => AppStateT
   const queryParams: GetBooksQueryParams = {
     q: subject === "all" ? q : `${q}+subject:${subject}`,
     orderBy,
-    maxResults:(totalItems-maxResults!)>=30?30:(totalItems-maxResults!),
+    maxResults: (totalItems - maxResults!) >= 30 ? 30 : (totalItems - maxResults!),
     startIndex,
   }
   dispatch(setIsLoading(true));
   booksAPI.getBooks(queryParams)
     .then(data => {
-      console.log(currentBooks)
-      console.log(data.items)
       dispatch(setBooks([...currentBooks, ...data.items]));
     })
     .catch(err => {
       dispatch(setError(err.message ? "Some error has acquired" : err.response.data.error.message));
-      setTimeout(()=>setError(''),10000)
+      setTimeout(() => setError(''), 10000)
     })
     .finally(() => {
       dispatch(setIsLoading(false));

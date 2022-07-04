@@ -19,7 +19,6 @@ export const Header = () => {
   const [title, setTitle] = useState('')
   const [subject, setSubject] = useState<SubjectTypes>('all')
   const [orderBy, setOrderBy] = useState<OrderByTypes>('relevance')
-  const [but, setBut] = useState<string>('')
 
   //clean error in 10 sec if it occurred
   useEffect(() => {
@@ -46,22 +45,17 @@ export const Header = () => {
   return (
     <div className={s.header}>
       <div className={s.container}>
-        <div className={s.subHeader}>Google books search api - {but}</div>
-        <div className={s.search}>
+        <div className={s.subHeader}>Google books search api</div>
+        <form className={s.search} onSubmit={onSearchClickHandler}>
           <input
             style={s}
             disabled={isLoading}
             type="text"
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            onKeyDown={button => {
-              setBut(button.code)
-            }
-              // button.code === "Enter" && onSearchClickHandler()
-          }
             placeholder={"Enter title"}/>
           <button disabled={isLoading} onClick={onSearchClickHandler}>🔍</button>
-        </div>
+        </form>
         {error && <div className={s.error}>{error}</div>}
         <div className={s.categories}>
           <SelectCategories subject={subject} callback={onSubjectSelectChangeHandler}/>
