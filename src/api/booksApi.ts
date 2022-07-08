@@ -1,5 +1,8 @@
 import {instance} from "./instance";
 
+//key const
+export const key = "AIzaSyB1G9yn8AfZrs6_yQ-Xdng4d007jB2rfMM"
+
 //query types
 export type SubjectTypes = "all" | "art" | "biography" | "computers" | "history" | "medical" | "poetry"
 export type OrderByTypes = "relevance" | "newest"

@@ -56,7 +56,7 @@ const initialState: InitStateType = {
 export const booksReducer = (state: InitStateType = initialState, action: BooksActionsType) => {
   switch (action.type) {
     case "SET_BOOKS":
-      return {...state, books: action.books}
+      return {...state, books: [...state.books,...action.books]}
     case "SET_TITLE":
       return {...state, searchParams: {...state.searchParams, q: action.title}}
     case "SET_ERROR":

@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {useNavigate, useParams} from "react-router-dom";
+import { useNavigate, useParams} from "react-router-dom";
 import {useAppSelector} from "../../bll/store";
 import {SingleBookResponseDataType} from "../../api/booksApi";
 import {v1} from "uuid";
@@ -24,8 +24,9 @@ export const BookDescription = () => {
     }
   },[dispatch,params.id])
 
+  //go back button logic
   const goBack = () => {
-    navigate(-1)
+    navigate('/')
   }
   return (
     <div className={s.container}>

@@ -124,7 +124,7 @@ export const getBookDescription = (id: string): AppThunkType => (dispatch) => {
   booksAPI.getBookDescription(id)
     .then(data=>{
       // console.log(data)
-      dispatch(setBookDescription(data))
+      dispatch(setBookDescription(data as SingleBookResponseDataType))
     })
     .catch(err => {
       dispatch(setError(err.message ? "Some error has acquired" : err.response.data.error.message));
