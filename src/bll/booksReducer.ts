@@ -11,7 +11,7 @@ const SET_SUBJECT = "SET_SUBJECT"
 const SET_ORDER_BY = "SET_ORDER_BY"
 const SET_LOADING = "SET_LOADING"
 const SET_LOAD_MORE = "SET_LOAD_MORE"
-const SET_START_INDEX_ZERO = "SET_START_INDEX_ZERO"
+const SET_START_INDEX = "SET_START_INDEX"
 
 //types
 type InitStateType = {
@@ -31,7 +31,7 @@ export type BooksActionsType =
   ReturnType<typeof setQueryOrderBy> |
   ReturnType<typeof setTotalItems> |
   ReturnType<typeof setLoadMore> |
-  ReturnType<typeof setStartIndexToZero> |
+  ReturnType<typeof setStartIndex> |
   ReturnType<typeof setIsFirstSearch> |
   ReturnType<typeof setIsLoading>
 
@@ -56,7 +56,7 @@ const initialState: InitStateType = {
 export const booksReducer = (state: InitStateType = initialState, action: BooksActionsType) => {
   switch (action.type) {
     case "SET_BOOKS":
-      return {...state, books: [...state.books,...action.books]}
+      return {...state, books: [...state.books, ...action.books]}
     case "SET_TITLE":
       return {...state, searchParams: {...state.searchParams, q: action.title}}
     case "SET_ERROR":
@@ -71,8 +71,8 @@ export const booksReducer = (state: InitStateType = initialState, action: BooksA
       return {...state, isLoading: action.isLoading}
     case "SET_FIRST_SEARCH":
       return {...state, isFirstSearch: action.isFirstSearch}
-    case "SET_START_INDEX_ZERO":
-      return {...state, searchParams: {...state.searchParams, startIndex: 0}}
+    case "SET_START_INDEX":
+      return {...state, searchParams: {...state.searchParams, startIndex: action.startIndex}}
     case "SET_LOAD_MORE":
       return {
         ...state,
@@ -114,16 +114,14 @@ export const setError = (error: string) => {
 export const setLoadMore = () => {
   return {type: SET_LOAD_MORE,} as const
 }
-export const setStartIndexToZero = () => {
-  return {type: SET_START_INDEX_ZERO,} as const
+export const setStartIndex = (startIndex:number) => {
+  return {type: SET_START_INDEX, startIndex} as const
 }
 
 
 //thunks
 export const getBooks = (): AppThunkType => (dispatch, getState: () => AppStateType) => {
-  dispatch(setStartIndexToZero())
   setError('')
-  // setBooks([])
   const {q, orderBy, maxResults, subject, startIndex} = getState().books.searchParams
   const queryParams: GetBooksQueryParams = {
     q: subject === "all" ? q : `${q}+subject:${subject}`,
@@ -155,7 +153,7 @@ export const loadMore = (): AppThunkType => (dispatch, getState: () => AppStateT
   const queryParams: GetBooksQueryParams = {
     q: subject === "all" ? q : `${q}+subject:${subject}`,
     orderBy,
-    maxResults: (totalItems - maxResults!) >= 30 ? 30 : (totalItems - maxResults!),
+    maxResults: (totalItems - maxResults!) >= maxResults! ? maxResults : (totalItems - maxResults!),
     startIndex,
   }
   dispatch(setIsLoading(true));

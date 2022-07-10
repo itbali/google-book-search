@@ -1,21 +1,37 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {BookType} from "../../api/booksApi";
 import {Book} from "../Book/Book";
 import {useAppSelector} from "../../bll/store";
 import s from "./Books.module.scss"
 import {useDispatch} from "react-redux";
-import {loadMore} from "../../bll/booksReducer";
+import {useNavigate, useSearchParams} from "react-router-dom";
+import {setStartIndex} from "../../bll/booksReducer";
 
 export const Books = () => {
 
-  const dispatch = useDispatch()
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const totalItems = useAppSelector<number>(state => state.books.totalItems)
   const isFirstSearch = useAppSelector<boolean>(state => state.books.isFirstSearch)
   const books = useAppSelector<Array<BookType>>(state => state.books.books)
   const isLoading = useAppSelector<boolean>(state => state.books.isLoading)
 
+
+  // change search params on load more click handler
   const onLoadMoreClickHandler = () => {
-    dispatch<any>(loadMore())
+    // @ts-ignore
+    const currentParams = Object.fromEntries([...searchParams]);
+    setSearchParams({
+      q: currentParams.q,
+      orderBy: currentParams.orderBy,
+      startIndex: (Number(currentParams.startIndex) + 30).toString(),
+      maxResults: currentParams.maxResults,
+      key: "AIzaSyB1G9yn8AfZrs6_yQ-Xdng4d007jB2rfMM",
+    }, {replace: true})
+    // dispatch(setStartIndex(Number(currentParams.startIndex) + 30))
+    // navigate({
+    //   pathname: '/', search: `q=${currentParams.q}&orderBy=${currentParams.orderBy}&startIndex=${Number(currentParams.startIndex) + 30}&maxResults=${currentParams.maxResults}&key=AIzaSyB1G9yn8AfZrs6_yQ-Xdng4d007jB2rfMM`
+    // })
   }
 
   if (isFirstSearch) {

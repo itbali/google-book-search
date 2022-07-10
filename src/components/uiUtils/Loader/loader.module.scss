@@ -15,3 +15,26 @@
   font-size: 50px;
   z-index: 100;
 }
+
+.animation{
+  box-sizing: border-box;
+  width: 150px;
+  height: 150px;
+  border-top: 8px solid white;
+  border-bottom: 8px solid white;
+  border-radius: 50%;
+  animation: load 2s infinite;
+}
+
+@keyframes load {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    scale: 1.1;
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

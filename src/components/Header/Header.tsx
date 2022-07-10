@@ -2,11 +2,19 @@ import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import {SelectOrderBy} from "../uiUtils/SelectOrderBy/SelectOrderBy";
 import {SelectCategories} from "../uiUtils/SelectCategories/SelectCategories";
 import {useAppSelector} from "../../bll/store";
-import {getBooks, setError, setQueryOrderBy, setQuerySubject, setQueryTitle} from "../../bll/booksReducer";
-import {key, OrderByTypes, SubjectTypes} from "../../api/booksApi";
+import {
+  getBooks,
+  setBooks,
+  setError,
+  setQueryOrderBy,
+  setQuerySubject,
+  setQueryTitle,
+  setStartIndex
+} from "../../bll/booksReducer";
+import {OrderByTypes, SubjectTypes} from "../../api/booksApi";
 import {useDispatch} from "react-redux";
 import s from "./Header.module.scss"
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {NavLink, useNavigate, useSearchParams} from "react-router-dom";
 
 const timeBeforeErrorDisappear = 10000
 
@@ -28,7 +36,6 @@ export const Header = () => {
   const startIndexFromStateParams = useAppSelector<string>(state => state.books.searchParams.startIndex!.toString() as string)
 
 
-
   // @ts-ignore
   useEffect(() => {
     // read the params on component load and when any changes occur
@@ -37,23 +44,27 @@ export const Header = () => {
     // get new values on change
     console.log('useEffect:', currentParams);
     // update the search params programmatically
-    if (currentParams.q){
+    if (currentParams.q) {
       dispatch(setQueryTitle(currentParams.q));
       dispatch(setQuerySubject('all'))
       dispatch(setQueryOrderBy(currentParams.orderBy || 'relevance'))
+      dispatch(setStartIndex(currentParams.startIndex))
 
       dispatch<any>(getBooks())
+    } else if (qFromStateParams) {
+      setSearchParams({
+        q: subjectFromStateParams !== 'all'
+          ? `${qFromStateParams}+${subjectFromStateParams}`
+          : qFromStateParams,
+        orderBy: orderByFromStateParams,
+        startIndex: startIndexFromStateParams,
+        maxResults: maxResultsFromStateParams,
+        key: "AIzaSyB1G9yn8AfZrs6_yQ-Xdng4d007jB2rfMM",
+      })
     }
-    // setSearchParams({
-    //   q: subjectFromStateParams !== 'all'
-    //     ? `${qFromParams}+${subjectFromStateParams}`
-    //     : qFromParams,
-    //   orderBy: orderByFromStateParams,
-    //   startIndex: startIndexFromStateParams,
-    //   maxResults: maxResultsFromStateParams,
-    //   key: key,
-    // });
-  }, [qFromStateParams, subjectFromStateParams, orderByFromStateParams, startIndexFromStateParams, maxResultsFromStateParams]);
+  }, [
+    // qFromStateParams, subjectFromStateParams, orderByFromStateParams, startIndexFromStateParams, maxResultsFromStateParams,
+    searchParams]);
 
 
   //set local state
@@ -79,36 +90,31 @@ export const Header = () => {
   }
 
   //main search logic
-  const onSearchClickHandler = (e:FormEvent<HTMLFormElement>) => {
+  const onSearchClickHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     dispatch(setQueryTitle(title));
     dispatch(setQuerySubject(subject))
     dispatch(setQueryOrderBy(orderBy))
+    //clean books before each new search
+    dispatch(setBooks([]))
+    dispatch(setStartIndex(0))
 
+    //form search params
     const q = subject !== 'all'
       ? `${title}+${subject}`
       : title
 
-    navigate({pathname:'/', search:`q=${q}&orderBy=${orderBy}&startIndex=${startIndexFromStateParams}&maxResults=${maxResultsFromStateParams}&key=AIzaSyB1G9yn8AfZrs6_yQ-Xdng4d007jB2rfMM`})
-
-    // setSearchParams({
-    //   q: subjectFromStateParams !== 'all'
-    //     ? `${qFromStateParams}+${subjectFromStateParams}`
-    //     : qFromStateParams,
-    //   orderBy: orderByFromStateParams,
-    //   startIndex: startIndexFromStateParams,
-    //   maxResults: maxResultsFromStateParams,
-    //   key: key,
-    // });
-
-    // dispatch<any>(getBooks())
+    navigate({
+      pathname: '/',
+      search: `q=${q}&orderBy=${orderBy}&startIndex=${0}&maxResults=${maxResultsFromStateParams}&key=AIzaSyB1G9yn8AfZrs6_yQ-Xdng4d007jB2rfMM`
+    })
   }
 
   return (
     <div className={s.header}>
       <div className={s.container}>
-        <div className={s.subHeader}>Google books search api</div>
-        <form className={s.search} onSubmit={(e)=>onSearchClickHandler(e)}>
+        <NavLink to={'/'} className={s.subHeader}>Google books search api</NavLink>
+        <form className={s.search} onSubmit={(e) => onSearchClickHandler(e)}>
           <input
             style={s}
             disabled={isLoading}

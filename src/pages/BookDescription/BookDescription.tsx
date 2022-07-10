@@ -6,6 +6,8 @@ import {v1} from "uuid";
 import s from "./BookDescription.module.scss"
 import {useDispatch} from "react-redux";
 import {getBookDescription, resetBookDescription} from "../../bll/bookDescriptionReducer";
+import {setBooks} from "../../bll/booksReducer";
+import {Loader} from "../../components/uiUtils/Loader/Loader";
 
 const noBookCover = "https://onlinebookclub.org/book-covers/no-cover.jpg"
 export const BookDescription = () => {
@@ -14,9 +16,11 @@ export const BookDescription = () => {
   const params = useParams()
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const currentBook = useAppSelector<SingleBookResponseDataType>(state => state.bookDescription)
 
-  //getServData
+  const currentBook = useAppSelector<SingleBookResponseDataType>(state => state.bookDescription)
+  const isLoading = useAppSelector<boolean>(state => state.books.isLoading)
+
+  //get book description from server using bookID from url params
   useEffect(()=>{
     dispatch<any>(getBookDescription(params.id as string))
     return ()=>{
@@ -24,10 +28,17 @@ export const BookDescription = () => {
     }
   },[dispatch,params.id])
 
-  //go back button logic
+  //go back button and clean books history search. it will get fresh from state params
   const goBack = () => {
+    dispatch(setBooks([]))
     navigate('/')
   }
+
+  //show loading while getting book description
+  if (isLoading){
+    return <Loader/>
+  }
+
   return (
     <div className={s.container}>
       <div className={s.wrapper}>
