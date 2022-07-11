@@ -12,4 +12,7 @@ Can go back from books description page and all results will stay in store
 
 ### TODO
 
-
+1) add search params in url and realize link sending
+2) cover reducer with JEST unit tests 
+3) show search header in book description (not sure if this is correct for UX)
+4) show each book in modal window, not new page ( and again - what is better UX?)
