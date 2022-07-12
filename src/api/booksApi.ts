@@ -1,4 +1,5 @@
 import {instance} from "./instance";
+export const key = "AIzaSyB1G9yn8AfZrs6_yQ-Xdng4d007jB2rfMM"
 
 //query types
 export type SubjectTypes = "all" | "art" | "biography" | "computers" | "history" | "medical" | "poetry"
@@ -184,7 +185,7 @@ export const booksAPI = {
     return instance.get<GetBooksResponseDataType>("", {
       params: {
         ...params,
-        key: "AIzaSyB1G9yn8AfZrs6_yQ-Xdng4d007jB2rfMM"
+        key
       }
     })
       .then(response => response.data);
@@ -192,7 +193,7 @@ export const booksAPI = {
   getBookDescription<SingleBookResponseDataType>(id: string) {
     return instance.get<SingleBookResponseDataType>(`/${id}`, {
       params: {
-        key: "AIzaSyB1G9yn8AfZrs6_yQ-Xdng4d007jB2rfMM"
+        key
       }
     })
       .then(response => response.data)
